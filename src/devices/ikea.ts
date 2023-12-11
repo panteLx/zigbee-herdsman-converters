@@ -12,6 +12,7 @@ import extend from '../lib/extend';
 import * as globalStore from '../lib/store';
 import * as zigbeeHerdsman from 'zigbee-herdsman/dist';
 import {calibrateAndPrecisionRoundOptions, postfixWithEndpointName, precisionRound} from '../lib/utils';
+import {onOff} from '../lib/modernExtend';
 const e = exposes.presets;
 const ea = exposes.access;
 
@@ -152,7 +153,7 @@ const fzLocal = {
                 // calibrate and round pm25 unless invalid
                 pm25 = (pm25 == 65535) ? -1 : calibrateAndPrecisionRoundOptions(pm25, options, 'pm25');
 
-                state[pm25Property] = calibrateAndPrecisionRoundOptions(pm25, options, 'pm25');
+                state[pm25Property] = pm25;
                 state[airQualityProperty] = airQuality;
             }
 
@@ -296,10 +297,27 @@ const fzLocal = {
             return {action: `dots_${button}_${action}`};
         },
     } satisfies Fz.Converter,
+    ikea_dots_click_v2_somrig: {
+        cluster: 'tradfriButton',
+        type: ['commandAction1', 'commandAction2', 'commandAction3', 'commandAction4', 'commandAction6'],
+        convert: (model, msg, publish, options, meta) => {
+            const button = utils.getFromLookup(msg.endpoint.ID, {1: '1', 2: '2'});
+            const lookup = {
+                commandAction1: 'initial_press',
+                commandAction2: 'long_press',
+                commandAction3: 'short_release',
+                commandAction4: 'long_release',
+                commandAction6: 'double_press',
+            };
+            const action = utils.getFromLookup(msg.type, lookup);
+            return {action: `${button}_${action}`};
+        },
+    } satisfies Fz.Converter,
     ikea_volume_click: {
         cluster: 'genLevelCtrl',
         type: 'commandMoveWithOnOff',
         convert: (model, msg, publish, options, meta) => {
+            if (utils.hasAlreadyProcessedMessage(msg, model)) return;
             const direction = msg.data.movemode === 1 ? 'down' : 'up';
             return {action: `volume_${direction}`};
         },
@@ -308,6 +326,7 @@ const fzLocal = {
         cluster: 'genLevelCtrl',
         type: 'commandMove',
         convert: (model, msg, publish, options, meta) => {
+            if (utils.hasAlreadyProcessedMessage(msg, model)) return;
             const direction = msg.data.movemode === 1 ? 'down_hold' : 'up_hold';
             return {action: `volume_${direction}`};
         },
@@ -400,12 +419,7 @@ const definitions: Definition[] = [
         model: 'E1836',
         vendor: 'IKEA',
         description: 'ASKVADER on/off switch',
-        extend: extend.switch(),
-        configure: async (device, coordinatorEndpoint, logger) => {
-            const endpoint = device.getEndpoint(1);
-            await reporting.bind(endpoint, coordinatorEndpoint, ['genOnOff']);
-            await reporting.onOff(endpoint);
-        },
+        extend: [onOff()],
     },
     {
         zigbeeModel: ['TRADFRI bulb E27 WS opal 980lm', 'TRADFRI bulb E26 WS opal 980lm', 'TRADFRI bulb E27 WS\uFFFDopal 980lm'],
@@ -751,13 +765,7 @@ const definitions: Definition[] = [
         model: 'E1603/E1702/E1708',
         description: 'TRADFRI control outlet',
         vendor: 'IKEA',
-        extend: extend.switch(),
-        configure: async (device, coordinatorEndpoint, logger) => {
-            const endpoint = device.getEndpoint(1);
-            await reporting.bind(endpoint, coordinatorEndpoint, ['genOnOff']);
-            await reporting.onOff(endpoint);
-        },
-        ota: ota.tradfri,
+        extend: [onOff({ota: ota.tradfri})],
     },
     {
         zigbeeModel: ['TRADFRI remote control'],
@@ -832,15 +840,9 @@ const definitions: Definition[] = [
         model: 'E1842',
         description: 'KNYCKLAN receiver electronic water valve shut-off',
         vendor: 'IKEA',
-        fromZigbee: extend.switch().fromZigbee.concat([fz.ias_water_leak_alarm_1]),
-        exposes: extend.switch().exposes.concat([e.water_leak()]),
-        extend: extend.switch(),
-        configure: async (device, coordinatorEndpoint, logger) => {
-            const endpoint = device.getEndpoint(1);
-            await reporting.bind(endpoint, coordinatorEndpoint, ['genOnOff']);
-            await reporting.onOff(endpoint);
-        },
-        ota: ota.tradfri,
+        fromZigbee: [fz.ias_water_leak_alarm_1],
+        exposes: [e.water_leak()],
+        extend: [onOff({ota: ota.tradfri})],
     },
     {
         zigbeeModel: ['TRADFRI SHORTCUT Button'],
@@ -1220,10 +1222,10 @@ const definitions: Definition[] = [
             const endpoint3 = device.getEndpoint(3);
             await reporting.bind(endpoint1, coordinatorEndpoint, ['genOnOff', 'genLevelCtrl', 'genPollCtrl']);
             if (endpoint2) {
-                await reporting.bind(endpoint2, coordinatorEndpoint, ['heimanSpecificScenes']);
+                await reporting.bind(endpoint2, coordinatorEndpoint, ['tradfriButton']);
             }
             if (endpoint3) {
-                await reporting.bind(endpoint3, coordinatorEndpoint, ['heimanSpecificScenes']);
+                await reporting.bind(endpoint3, coordinatorEndpoint, ['tradfriButton']);
             }
             await reporting.batteryVoltage(endpoint1);
         },
@@ -1272,6 +1274,27 @@ const definitions: Definition[] = [
             await reporting.occupancy(endpoint2);
             await reporting.bind(endpoint3, cordinatorEndpoint, ['msIlluminanceMeasurement']);
             await reporting.illuminance(endpoint3);
+        },
+    },
+    {
+        zigbeeModel: ['SOMRIG shortcut button'],
+        model: 'E2213',
+        vendor: 'IKEA',
+        description: 'SOMRIG shortcut button',
+        fromZigbee: [fz.battery, fzLocal.ikea_dots_click_v2_somrig],
+        toZigbee: [tz.battery_percentage_remaining],
+        exposes: [
+            e.battery().withAccess(ea.STATE_GET), e.action(['dots_1_initial_press',
+                'dots_2_initial_press', 'dots_1_long_press', 'dots_2_long_press',
+                'dots_1_short_release', 'dots_2_short_release', 'dots_1_long_release']),
+        ],
+        ota: ota.tradfri,
+        configure: async (device, coordinatorEndpoint, logger) => {
+            const endpoint1 = device.getEndpoint(1);
+            const endpoint2 = device.getEndpoint(2);
+            await reporting.bind(endpoint1, coordinatorEndpoint, ['tradfriButton', 'genPollCtrl']);
+            await reporting.bind(endpoint2, coordinatorEndpoint, ['tradfriButton']);
+            await reporting.batteryVoltage(endpoint1);
         },
     },
     {

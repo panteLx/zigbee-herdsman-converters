@@ -3,11 +3,10 @@ import fz from '../converters/fromZigbee';
 import * as legacy from '../lib/legacy';
 import tz from '../converters/toZigbee';
 import * as reporting from '../lib/reporting';
-import extend from '../lib/extend';
 import {Definition} from '../lib/types';
 const e = exposes.presets;
 import * as tuya from '../lib/tuya';
-import {light} from '../lib/modernExtend';
+import {light, onOff} from '../lib/modernExtend';
 
 const ea = exposes.access;
 
@@ -17,14 +16,14 @@ const definitions: Definition[] = [
         model: 'LXZB-12A',
         vendor: 'Zemismart',
         description: 'RGB LED downlight',
-        extend: [light({color: true})],
+        extend: [light({colorTemp: {range: undefined}, color: true})],
     },
     {
         zigbeeModel: ['LXT56-LS27LX1.6'],
         model: 'HGZB-DLC4-N15B',
         vendor: 'Zemismart',
         description: 'RGB LED downlight',
-        extend: [light({color: true})],
+        extend: [light({colorTemp: {range: undefined}, color: true})],
     },
     {
         zigbeeModel: ['TS0302'],
@@ -66,12 +65,7 @@ const definitions: Definition[] = [
         model: 'LXN56-SS27LX1.1',
         vendor: 'Zemismart',
         description: 'Smart light switch - 2 gang with neutral wire',
-        extend: extend.switch(),
-        configure: async (device, coordinatorEndpoint, logger) => {
-            const endpoint = device.getEndpoint(10);
-            await reporting.bind(endpoint, coordinatorEndpoint, ['genOnOff']);
-            await reporting.onOff(endpoint);
-        },
+        extend: [onOff()],
     },
     {
         fingerprint: [{modelID: 'TS0601', manufacturerName: '_TZE200_zqtiam4u'}],

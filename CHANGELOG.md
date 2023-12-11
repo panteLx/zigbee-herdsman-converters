@@ -1,5 +1,83 @@
 # Changelog
 
+## [16.6.0](https://github.com/Koenkk/zigbee-herdsman-converters/compare/v16.5.0...v16.6.0) (2023-12-10)
+
+
+### Features
+
+* **add:** E2213 ([#6574](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6574)) ([abe682d](https://github.com/Koenkk/zigbee-herdsman-converters/commit/abe682d1422276918ad069671c3ea6e134772994))
+* **add:** SIN-4-1-21_EQU [@inoxas78](https://github.com/inoxas78)  https://github.com/Koenkk/zigbee2mqtt/issues/20137 ([dfe42be](https://github.com/Koenkk/zigbee-herdsman-converters/commit/dfe42bede51a8a147ec58624b0f2ef16ddafee34))
+* **add:** SP 240 ([#6637](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6637)) ([8eb43be](https://github.com/Koenkk/zigbee-herdsman-converters/commit/8eb43be096eedcc322813987de3d6baf30c470ac))
+* **ignore:** Refactor ledvance to modernExtend ([#6670](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6670)) ([c361f9b](https://github.com/Koenkk/zigbee-herdsman-converters/commit/c361f9bf65992f1feeb57a46a1cd8ab8ea8dbdf3))
+* **ignore:** Refactor various lights to modernExtend ([#6676](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6676)) ([5fe7f66](https://github.com/Koenkk/zigbee-herdsman-converters/commit/5fe7f6618a82877d89997650b5c7dca992ae47fc))
+* **ignore:** Refactor various switches to modernExtend ([#6675](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6675)) ([5f33787](https://github.com/Koenkk/zigbee-herdsman-converters/commit/5f3378765bdf1de5327a4859164fcee68dd0794e))
+* **ignore:** Refactor various switches to modernExtend ([#6677](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6677)) ([26a724e](https://github.com/Koenkk/zigbee-herdsman-converters/commit/26a724e36d063b63d8b40d988a45f30e5f999bc2))
+
+
+### Bug Fixes
+
+* Correct LiXee logging ([#6672](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6672)) ([5e2b0b2](https://github.com/Koenkk/zigbee-herdsman-converters/commit/5e2b0b2ddd604eb216c31a62ecd520de292c3839))
+* **detect:** Detect `_TZE200_wktrysab` as TuYa WLS098-8GANAG https://github.com/Koenkk/zigbee2mqtt/issues/20136 ([3fdee2a](https://github.com/Koenkk/zigbee-herdsman-converters/commit/3fdee2a485861f4ab2b09bc3aded3d7012ee273f))
+* **detect:** Detect `_TZE204_bkkmqmyo` as Hiking DDS238-2 ([#6678](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6678)) ([88140b9](https://github.com/Koenkk/zigbee-herdsman-converters/commit/88140b91222c474da83e2ffc57380dc33742228d))
+* Fix `current_heating_setpoint` step size for Moes BHT-002-GCLZB ([#6634](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6634)) ([634ca26](https://github.com/Koenkk/zigbee-herdsman-converters/commit/634ca26ee24409070dc923062f69fa327e884ce2))
+* Fix duplicate events for IKEA Symfonisk remote ([#6679](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6679)) ([78ca7db](https://github.com/Koenkk/zigbee-herdsman-converters/commit/78ca7db77c838ca885e26f15c1eba661120e8a8f))
+* Fix schedule expose for BAC-002-ALZB and TS0601_thermostat https://github.com/nurikk/zigbee2mqtt-frontend/pull/1851 ([4117881](https://github.com/Koenkk/zigbee-herdsman-converters/commit/4117881927684ba15f908c2d2e6bf0532f54dbcc))
+* **ignore:** fix 634ca26ee24409070dc923062f69fa327e884ce2 ([51f73d3](https://github.com/Koenkk/zigbee-herdsman-converters/commit/51f73d31507ba87997fde9535bca8a3cbefc2f2a))
+* **ignore:** update dependencies ([#6680](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6680)) ([412fe61](https://github.com/Koenkk/zigbee-herdsman-converters/commit/412fe613ef6e276237f819d23cfed44559d10c64))
+* Use reporting instead of polling for TS011F_plug appVersion 66 https://github.com/Koenkk/zigbee2mqtt/issues/20110 ([d15371a](https://github.com/Koenkk/zigbee-herdsman-converters/commit/d15371a655092a4bb49dede1cb5cfbedc87ecae4))
+
+## [16.5.0](https://github.com/Koenkk/zigbee-herdsman-converters/compare/v16.4.0...v16.5.0) (2023-12-09)
+
+
+### Features
+
+* Support scene transition times with a resolution of 100ms instead of 1 second ([#6656](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6656)) ([cc816f4](https://github.com/Koenkk/zigbee-herdsman-converters/commit/cc816f490e5c46cb5bf57db3e387eadd83dc5486))
+
+
+### Bug Fixes
+
+* **detect:** Detect `_TZ3000_gntwytxo` as Moes ZSS-X-GWM-C ([#6662](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6662)) ([d069040](https://github.com/Koenkk/zigbee-herdsman-converters/commit/d06904030c78c117afba575903fe8703b119a9d1))
+* **detect:** Detect `_TZ3000_wpueorev` as TuYa ZN231392 https://github.com/Koenkk/zigbee2mqtt/issues/20111 ([0e9f8d4](https://github.com/Koenkk/zigbee-herdsman-converters/commit/0e9f8d4d8fc3e50db2cbe2905c29045061d355a2))
+* **detect:** Detect `_TZ3290_xjpbcxn92aaxvmlz` as Moes UFO-R11 https://github.com/Koenkk/zigbee-herdsman-converters/issues/6663 ([2ed78c4](https://github.com/Koenkk/zigbee-herdsman-converters/commit/2ed78c43f3c1894d8c837fd5cc925616f7766ed7))
+* Fixes for MCCGQ13LM, E2007 and TuYa typos ([#6666](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6666)) ([5ba0dcd](https://github.com/Koenkk/zigbee-herdsman-converters/commit/5ba0dcd7444c05e123723abe40ddbac0e3a970c8))
+
+## [16.4.0](https://github.com/Koenkk/zigbee-herdsman-converters/compare/v16.3.1...v16.4.0) (2023-12-09)
+
+
+### Features
+
+* **ignore:** Refactor various Philips devices to modernExtend ([#6668](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6668)) ([269889b](https://github.com/Koenkk/zigbee-herdsman-converters/commit/269889bc09dd4e029f93702b80da5cb500bf6b8a))
+
+
+### Bug Fixes
+
+* **ignore:** fix eacd234c9ea2b7b69e261bcdaeeef3e473ff08a6 ([340417a](https://github.com/Koenkk/zigbee-herdsman-converters/commit/340417a57f5a97550773407e80ca914a17582f78))
+* **ignore:** update dependencies ([#6669](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6669)) ([238ca89](https://github.com/Koenkk/zigbee-herdsman-converters/commit/238ca89f2008777536d76569c53ac19527766719))
+
+## [16.3.1](https://github.com/Koenkk/zigbee-herdsman-converters/compare/v16.3.0...v16.3.1) (2023-12-08)
+
+
+### Bug Fixes
+
+* **ignore:** Revert "fix(ignore): Refactor Philips lights to modernExtend ([#6659](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6659))" ([57d6204](https://github.com/Koenkk/zigbee-herdsman-converters/commit/57d62041e7ea742d3aa2bffdc3c35e0b9c55274f))
+
+## [16.3.0](https://github.com/Koenkk/zigbee-herdsman-converters/compare/v16.2.0...v16.3.0) (2023-12-08)
+
+
+### Features
+
+* **add:** TS0601_switch_8_2 ([#6545](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6545)) ([3b6eb9c](https://github.com/Koenkk/zigbee-herdsman-converters/commit/3b6eb9cae777ceb0bd074278cbdc8f843b8d94b0))
+
+
+### Bug Fixes
+
+* **detect:** Detect `_TZ3000_kstbkt6a` as Aubess IH-K665 https://github.com/Koenkk/zigbee2mqtt/issues/20106 ([23fa0a2](https://github.com/Koenkk/zigbee-herdsman-converters/commit/23fa0a24cc8304b75a26b5bbfea656c0b9a7f5a4))
+* **detect:** Detect `_TZE200_na98lvjp` as Ltech TY-75-24-G2Z2 https://github.com/Koenkk/zigbee2mqtt/issues/20066 ([aab51b9](https://github.com/Koenkk/zigbee-herdsman-converters/commit/aab51b9ecbe1e7ab4730c3aa6f4854b8127d3511))
+* **ignore:** fix 4cd4877732c0204800ebf5b230bb064ea28e3fea ([#6654](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6654)) ([19477ff](https://github.com/Koenkk/zigbee-herdsman-converters/commit/19477ffcf7c3ba01dbd902735a60361e0dfb1bd2))
+* **ignore:** fix aab51b9ecbe1e7ab4730c3aa6f4854b8127d3511 ([8c19f36](https://github.com/Koenkk/zigbee-herdsman-converters/commit/8c19f36a3983582b7eef156cb86e043b7035689f))
+* **ignore:** Improve fromZigbee ignore converters and modernExtend.test ([aa7be01](https://github.com/Koenkk/zigbee-herdsman-converters/commit/aa7be0191ffca5642de81358834a02ba131b52d3))
+* **ignore:** Refactor Philips lights to modernExtend ([#6659](https://github.com/Koenkk/zigbee-herdsman-converters/issues/6659)) ([84dece2](https://github.com/Koenkk/zigbee-herdsman-converters/commit/84dece2bbe1103d69f0a3721e1ca00e0b1b85c72))
+
 ## [16.2.0](https://github.com/Koenkk/zigbee-herdsman-converters/compare/v16.1.0...v16.2.0) (2023-12-07)
 
 

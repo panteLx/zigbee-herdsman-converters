@@ -17,7 +17,7 @@ project.getSourceFiles().forEach((sourceFile) => {
 
     let changed = true;
     let save = false;
-    const type = 'light';
+    const type = 'onOff';
     while (changed) {
         changed = false;
         const definitions = sourceFile.getVariableStatementOrThrow('definitions').getDescendantsOfKind(SyntaxKind.ObjectLiteralExpression);
@@ -32,25 +32,34 @@ project.getSourceFiles().forEach((sourceFile) => {
             const fromZigbee = childs.find((c) => c.getFirstChildByKind(SyntaxKind.Identifier)?.getText() === 'fromZigbee');
             const toZigbee = childs.find((c) => c.getFirstChildByKind(SyntaxKind.Identifier)?.getText() === 'toZigbee');
             const meta = childs.find((c) => c.getFirstChildByKind(SyntaxKind.Identifier)?.getText() === 'meta');
+            const endpoint = childs.find((c) => c.getFirstChildByKind(SyntaxKind.Identifier)?.getText() === 'endpoint');
 
-            if ((extend?.getFullText().includes('extend: extend.light_onoff_brightness_colortemp(') ||
-                extend?.getFullText().includes('extend: extend.light_onoff_brightness_colortemp_color(') ||
-                extend?.getFullText().includes('extend: extend.light_onoff_brightness_color(')) &&
-                !fromZigbee && !toZigbee && !configure && !exposes) {
+            // const ota = childs.find((c) => c.getFirstChildByKind(SyntaxKind.Identifier)?.getText() === 'ota');
+
+            if (extend?.getFullText().includes('extend: extend.switch()') &&
+                !fromZigbee && !toZigbee && exposes && endpoint) {
+                exposes?.remove();
                 console.log(`Handling ${model?.getFullText().trim()}`);
-                const newOpts: {[s: string]: unknown} = {};
-                if (extend.getFullText().includes('_colortemp(')) {
+                const newOpts: {[s: string]: unknown} = {endpoints: eval(`(${endpoint.getFullText().split('return ')[1].split(';')[0]})`)};
+                configure?.remove();
+                endpoint?.remove();
+                const extendFeatures = extend.getFullText().split('(')[0].split('_');
+                if (extendFeatures.includes('colortemp')) {
                     newOpts.colorTemp = {range: null};
                 }
-                if (extend.getFullText().includes('_color(')) {
+                if (extendFeatures.includes('color')) {
                     newOpts.color = true;
+                }
+                if (extendFeatures.includes('gradient')) {
+                    newOpts.gradient = true;
                 }
                 let opts = extend?.getFullText().split('(')[1].slice(0, -1).trim();
                 if (opts) {
                     if (opts[opts.length - 1] === ',') {
                         opts = opts.substring(0, opts.length - 1);
                     }
-                    for (const [key, value] of Object.entries(eval(`(${opts})`))) {
+                    const evalOpts = Object.entries(eval(`(${opts})`));
+                    for (const [key, value] of evalOpts) {
                         if (key === 'colorTempRange') {
                             // @ts-expect-error
                             newOpts.colorTemp = {...newOpts.colorTemp, range: value};
@@ -61,9 +70,16 @@ project.getSourceFiles().forEach((sourceFile) => {
                             newOpts.powerOnBehaviour = !value;
                         } else if (key === 'disableEffect') {
                             newOpts.effect = !value;
-                        } else if (key === 'supportsHueAndSaturation') {
+                        } else if (key === 'disableHueEffects') {
+                            newOpts.hueEffect = !value;
+                        } else if (key === 'supportsHueAndSaturation' || key === 'preferHueAndSaturation') {
                             // @ts-expect-error
-                            newOpts.color = {...newOpts.color, modes: ['xy', 'hs']};
+                            newOpts.color = {...newOpts.color, modes: evalOpts.preferHueAndSaturation ? ['hs', 'xy'] : ['xy', 'hs']};
+                        } else if (key === 'extraEffects') {
+                            // @ts-expect-error
+                            newOpts.gradient = {...newOpts.gradient, extraEffects: value};
+                        } else if (key === 'noConfigure') {
+                            // ignore
                         } else {
                             throw new Error(`Unsupported ${key} - ${value}`);
                         }
@@ -79,16 +95,21 @@ project.getSourceFiles().forEach((sourceFile) => {
                         } else if (key === 'supportsEnhancedHue') {
                             // @ts-expect-error
                             newOpts.color = {...newOpts.color, enhancedHue: value};
+                        } else if (key === 'multiEndpoint' || key === 'disableDefaultResponse') {
+                            // ignore
                         } else {
                             throw new Error(`Unsupported ${key} - ${value}`);
                         }
                     }
                     meta.remove();
                 }
+                // if (ota) {
+                //     ota.remove();
+                // }
 
                 localTotalDefinitionsWithModernExtend += 1;
                 extend.replaceWithText(`extend: [${type}(${JSON.stringify(newOpts).split(`"`).join('')
-                    .replace(`range:null`, `range:undefined`).replace(`xy`, `'xy'`).replace(`hs`, `'hs'`)})]`);
+                    .replace(`range:null`, `range:undefined`).replace(`xy`, `'xy'`).replace(`hs`, `'hs'`).replace(`({})`, `()`)})]`);
                 changed = true;
                 save = true;
                 break;
